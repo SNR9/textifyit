@@ -1,11 +1,102 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+
+import React, { useState } from 'react';
+import FileUpload from '@/components/FileUpload';
+import TextResult from '@/components/TextResult';
+import ProcessingIndicator from '@/components/ProcessingIndicator';
+import { processFile, ExtractionResult } from '@/services/ocrService';
+import { toast } from '@/components/ui/sonner';
 
 const Index = () => {
+  const [processing, setProcessing] = useState(false);
+  const [currentFile, setCurrentFile] = useState<string>('');
+  const [progress, setProgress] = useState(0);
+  const [results, setResults] = useState<ExtractionResult[]>([]);
+  
+  const handleFileSelect = async (files: File[]) => {
+    if (files.length === 0) return;
+    
+    setProcessing(true);
+    setResults([]);
+    const newResults: ExtractionResult[] = [];
+    
+    try {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        setCurrentFile(file.name);
+        setProgress(0);
+        
+        toast.info(`Processing ${file.name}`, {
+          description: 'Text extraction started.'
+        });
+        
+        const result = await processFile(file, (progressValue) => {
+          setProgress(progressValue);
+        });
+        
+        newResults.push(result);
+        
+        toast.success(`Completed ${file.name}`, {
+          description: 'Text extraction finished.'
+        });
+      }
+      
+      setResults(newResults);
+    } catch (error) {
+      console.error('Error processing files:', error);
+      toast.error('Error processing files', {
+        description: 'There was an error extracting text from one or more files.'
+      });
+    } finally {
+      setProcessing(false);
+      setCurrentFile('');
+    }
+  };
+  
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-gray-600">Start building your amazing project here!</p>
+    <div className="min-h-screen bg-gray-50 py-8">
+      <div className="container px-4 mx-auto max-w-6xl">
+        <header className="mb-8 text-center">
+          <h1 className="text-3xl font-bold text-gray-900 mb-2">Image & PDF to Text Converter</h1>
+          <p className="text-gray-600">
+            Extract text from images and PDF files quickly and securely
+          </p>
+        </header>
+        
+        <div className="mb-8">
+          <FileUpload 
+            onFileSelect={handleFileSelect} 
+            isProcessing={processing} 
+          />
+        </div>
+        
+        {processing && (
+          <div className="mb-8">
+            <ProcessingIndicator 
+              fileName={currentFile} 
+              progress={progress} 
+            />
+          </div>
+        )}
+        
+        {results.length > 0 && (
+          <div className="mb-8">
+            <h2 className="text-xl font-semibold mb-4">Results</h2>
+            <div className="space-y-6">
+              {results.map((result, index) => (
+                <TextResult 
+                  key={index} 
+                  extractedText={result.text} 
+                  fileName={result.fileName} 
+                />
+              ))}
+            </div>
+          </div>
+        )}
+        
+        <footer className="mt-8 text-center text-sm text-gray-500">
+          <p>All processing happens locally in your browser. Your files never leave your device.</p>
+          <p className="mt-2">Privacy and security guaranteed.</p>
+        </footer>
       </div>
     </div>
   );
