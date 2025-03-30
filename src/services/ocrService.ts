@@ -2,7 +2,7 @@
 import { createWorker } from 'tesseract.js';
 import * as PDFJS from 'pdfjs-dist';
 import { GlobalWorkerOptions } from 'pdfjs-dist';
-import { toast } from '@/components/ui/sonner';
+import { toast } from 'sonner';
 
 // Set the worker path for PDF.js
 GlobalWorkerOptions.workerSrc = `https://cdnjs.cloudflare.com/ajax/libs/pdf.js/${PDFJS.version}/pdf.worker.min.js`;
@@ -23,7 +23,8 @@ export const extractTextFromImage = async (
     
     // Subscribe to progress updates
     if (onProgress) {
-      worker.setProgressHandler((progress) => {
+      // Fix the setProgressHandler issue
+      worker.progress((progress: { progress: number }) => {
         onProgress(progress.progress * 100);
       });
     }

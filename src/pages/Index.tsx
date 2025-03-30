@@ -1,10 +1,9 @@
-
 import React, { useState } from 'react';
 import FileUpload from '@/components/FileUpload';
 import TextResult from '@/components/TextResult';
 import ProcessingIndicator from '@/components/ProcessingIndicator';
 import { processFile, ExtractionResult } from '@/services/ocrService';
-import { toast } from '@/components/ui/sonner';
+import { toast } from 'sonner';
 
 const Index = () => {
   const [processing, setProcessing] = useState(false);

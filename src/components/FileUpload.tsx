@@ -2,7 +2,7 @@
 import React, { useCallback, useState } from 'react';
 import { FileImage, FileText, Upload } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { toast } from '@/components/ui/sonner';
+import { toast } from 'sonner';
 
 interface FileUploadProps {
   onFileSelect: (files: File[]) => void;

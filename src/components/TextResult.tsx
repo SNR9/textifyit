@@ -2,7 +2,7 @@
 import React, { useState } from 'react';
 import { Copy, Download } from 'lucide-react';
 import { Button } from '@/components/ui/button';
-import { toast } from '@/components/ui/sonner';
+import { toast } from 'sonner';
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 
 interface TextResultProps {
