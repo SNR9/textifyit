@@ -1,4 +1,3 @@
-
 import { createWorker } from 'tesseract.js';
 import * as PDFJS from 'pdfjs-dist';
 import { GlobalWorkerOptions } from 'pdfjs-dist';
@@ -19,16 +18,14 @@ export const extractTextFromImage = async (
   onProgress?: (progress: number) => void
 ): Promise<ExtractionResult> => {
   try {
-    const worker = await createWorker();
-    
-    // Set up progress handling
-    if (onProgress) {
-      worker.setLogger(m => {
-        if (m.progress !== undefined) {
+    // Create worker with progress tracking
+    const worker = await createWorker({
+      logger: m => {
+        if (onProgress && m.progress !== undefined) {
           onProgress(m.progress * 100);
         }
-      });
-    }
+      }
+    });
     
     await worker.loadLanguage('eng');
     await worker.initialize('eng');
