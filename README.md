@@ -1,18 +1,13 @@
-# Welcome to your Lovable project
+# Welcome to TestifyIt project
 
 ## Project info
 
-**URL**: https://lovable.dev/projects/66ef9d7d-2405-4e62-a07d-352b0b1bc94e
+**URL**: 
 
 ## How can I edit this code?
 
 There are several ways of editing your application.
 
-**Use Lovable**
-
-Simply visit the [Lovable Project](https://lovable.dev/projects/66ef9d7d-2405-4e62-a07d-352b0b1bc94e) and start prompting.
-
-Changes made via Lovable will be committed automatically to this repo.
 
 **Use your preferred IDE**
 
@@ -60,10 +55,10 @@ This project is built with .
 - shadcn-ui
 - Tailwind CSS
 
-## How can I deploy this project?
 
-Simply open [Lovable](https://lovable.dev/projects/66ef9d7d-2405-4e62-a07d-352b0b1bc94e) and click on Share -> Publish.
+## Wanna Contact Me?
+mail:- syednaseer91820@gmail.com
+portfolio:- https://snr9.github.io/syednaseer/
 
-## I want to use a custom domain - is that possible?
 
-We don't support custom domains (yet). If you want to deploy your project under your own domain then we recommend using Netlify. Visit our docs for more details: [Custom domains](https://docs.lovable.dev/tips-tricks/custom-domain/)
+
