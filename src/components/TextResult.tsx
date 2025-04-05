@@ -53,9 +53,9 @@ const TextResult: React.FC<TextResultProps> = ({ extractedText, fileName }) => {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="result-container bg-gray-50 p-4 rounded border">
+        <div className="result-container bg-gray-50 p-4 rounded border max-h-96 overflow-y-auto">
           {extractedText ? (
-            <pre className="whitespace-pre-wrap font-sans text-sm">{extractedText}</pre>
+            <pre className="whitespace-pre-wrap font-sans text-sm break-words">{extractedText}</pre>
           ) : (
             <p className="text-gray-400 italic">No text was extracted.</p>
           )}
