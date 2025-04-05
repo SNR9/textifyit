@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import FileUpload from '@/components/FileUpload';
 import TextResult from '@/components/TextResult';
@@ -51,6 +52,37 @@ const Index = () => {
     }
   };
   
+  const handleImagePaste = async (blob: Blob) => {
+    setProcessing(true);
+    setResults([]);
+    setCurrentFile('Pasted Image');
+    setProgress(0);
+    
+    try {
+      toast.info('Processing pasted image', {
+        description: 'Text extraction started.'
+      });
+      
+      const result = await processFile(blob, (progressValue) => {
+        setProgress(progressValue);
+      }, 'Pasted Image');
+      
+      setResults([result]);
+      
+      toast.success('Completed processing', {
+        description: 'Text extraction finished.'
+      });
+    } catch (error) {
+      console.error('Error processing pasted image:', error);
+      toast.error('Error processing pasted image', {
+        description: 'There was an error extracting text from the pasted image.'
+      });
+    } finally {
+      setProcessing(false);
+      setCurrentFile('');
+    }
+  };
+  
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container px-4 mx-auto max-w-6xl">
@@ -64,6 +96,7 @@ const Index = () => {
         <div className="mb-8">
           <FileUpload 
             onFileSelect={handleFileSelect} 
+            onImagePaste={handleImagePaste}
             isProcessing={processing} 
           />
         </div>

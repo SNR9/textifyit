@@ -1,3 +1,4 @@
+
 import { createWorker } from 'tesseract.js';
 import * as PDFJS from 'pdfjs-dist';
 import { GlobalWorkerOptions } from 'pdfjs-dist';
@@ -18,7 +19,7 @@ export const extractTextFromImage = async (
   onProgress?: (progress: number) => void
 ): Promise<ExtractionResult> => {
   try {
-    // Create worker with progress tracking
+    // Create worker with correct progress tracking
     const worker = await createWorker({
       logger: m => {
         if (onProgress && m.progress !== undefined) {
@@ -93,16 +94,20 @@ export const extractTextFromPDF = async (
   }
 };
 
-// Process files based on their type
+// Process a Blob or File
 export const processFile = async (
-  file: File, 
-  onProgress?: (progress: number) => void
+  file: File | Blob, 
+  onProgress?: (progress: number) => void,
+  fileName?: string
 ): Promise<ExtractionResult> => {
-  if (file.type.startsWith('image/')) {
-    return extractTextFromImage(file, onProgress);
-  } else if (file.type === 'application/pdf') {
-    return extractTextFromPDF(file, onProgress);
+  // Convert Blob to File if needed
+  const fileObj = file instanceof File ? file : new File([file], fileName || 'pasted-image.png', { type: file.type });
+  
+  if (fileObj.type.startsWith('image/')) {
+    return extractTextFromImage(fileObj, onProgress);
+  } else if (fileObj.type === 'application/pdf') {
+    return extractTextFromPDF(fileObj, onProgress);
   } else {
-    throw new Error(`Unsupported file type: ${file.type}`);
+    throw new Error(`Unsupported file type: ${fileObj.type}`);
   }
 };
