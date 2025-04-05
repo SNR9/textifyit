@@ -21,12 +21,11 @@ export const extractTextFromImage = async (
   try {
     const worker = await createWorker();
     
-    // Subscribe to progress updates
+    // Set up progress handling
     if (onProgress) {
-      // Handle progress using the correct Tesseract.js API
-      worker.addWorker.progress(({ progress, status }: any) => {
-        if (typeof progress === 'number') {
-          onProgress(progress * 100);
+      worker.setLogger(m => {
+        if (m.progress !== undefined) {
+          onProgress(m.progress * 100);
         }
       });
     }
