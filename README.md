@@ -58,7 +58,7 @@ This project is built with .
 
 ## Wanna Contact Me?
 mail:- syednaseer91820@gmail.com
-portfolio:- https://snr9.github.io/syednaseer/
+portfolio:- https://snr9.github.io/syednaseer.github.io/
 
 
 
