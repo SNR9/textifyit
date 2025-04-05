@@ -23,10 +23,10 @@ export const extractTextFromImage = async (
     
     // Subscribe to progress updates
     if (onProgress) {
-      // Handle progress using the correct Tesseract.js API
-      worker.setProgressHandler((progress: any) => {
-        if (progress && typeof progress.progress === 'number') {
-          onProgress(progress.progress * 100);
+      // Handle progress using Tesseract.js API
+      worker.progress(({ progress, status }) => {
+        if (typeof progress === 'number') {
+          onProgress(progress * 100);
         }
       });
     }
@@ -64,8 +64,17 @@ export const extractTextFromPDF = async (
     // Process each page
     for (let i = 1; i <= numPages; i++) {
       const page = await pdf.getPage(i);
-      const content = await page.getTextContent();
-      const pageText = content.items.map((item: any) => item.str).join(' ');
+      const textContent = await page.getTextContent();
+      
+      // Join text items, preserving spaces and line breaks
+      const pageText = textContent.items
+        .map((item: any) => {
+          // Add space after each text chunk if it doesn't end with a space
+          const text = item.str;
+          return text + (text.endsWith(' ') ? '' : ' ');
+        })
+        .join('')
+        .replace(/\s+/g, ' '); // Normalize spaces
       
       extractedText += pageText + '\n\n';
       
