@@ -55,7 +55,7 @@ const TextResult: React.FC<TextResultProps> = ({ extractedText, fileName }) => {
       <CardContent>
         <div className="result-container bg-gray-50 p-4 rounded border">
           {extractedText ? (
-            <p className="whitespace-pre-wrap">{extractedText}</p>
+            <pre className="whitespace-pre-wrap font-sans text-sm">{extractedText}</pre>
           ) : (
             <p className="text-gray-400 italic">No text was extracted.</p>
           )}

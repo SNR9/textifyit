@@ -15,7 +15,7 @@ export interface ExtractionResult {
 
 // Function to extract text from an image
 export const extractTextFromImage = async (
-  file: File, 
+  file: File | Blob, 
   onProgress?: (progress: number) => void
 ): Promise<ExtractionResult> => {
   try {
@@ -36,7 +36,7 @@ export const extractTextFromImage = async (
     
     return {
       text: data.text,
-      fileName: file.name
+      fileName: file instanceof File ? file.name : 'extracted-image'
     };
   } catch (error) {
     console.error('Error extracting text from image:', error);
@@ -47,7 +47,24 @@ export const extractTextFromImage = async (
   }
 };
 
-// Function to extract text from a PDF
+// Convert PDF page to image canvas
+const pdfPageToCanvas = async (page: any, scale = 2): Promise<HTMLCanvasElement> => {
+  const viewport = page.getViewport({ scale });
+  const canvas = document.createElement('canvas');
+  const context = canvas.getContext('2d');
+  
+  canvas.width = viewport.width;
+  canvas.height = viewport.height;
+  
+  await page.render({
+    canvasContext: context!,
+    viewport
+  }).promise;
+  
+  return canvas;
+};
+
+// Function to extract text from a PDF by converting each page to an image first
 export const extractTextFromPDF = async (
   file: File, 
   onProgress?: (progress: number) => void
@@ -56,33 +73,44 @@ export const extractTextFromPDF = async (
     const arrayBuffer = await file.arrayBuffer();
     const pdf = await PDFJS.getDocument({ data: arrayBuffer }).promise;
     const numPages = pdf.numPages;
-    let extractedText = '';
+    let combinedText = '';
     
-    // Process each page
+    // Process each page by converting to image first
     for (let i = 1; i <= numPages; i++) {
-      const page = await pdf.getPage(i);
-      const textContent = await page.getTextContent();
-      
-      // Join text items, preserving spaces and line breaks
-      const pageText = textContent.items
-        .map((item: any) => {
-          // Add space after each text chunk if it doesn't end with a space
-          const text = item.str;
-          return text + (text.endsWith(' ') ? '' : ' ');
-        })
-        .join('')
-        .replace(/\s+/g, ' '); // Normalize spaces
-      
-      extractedText += pageText + '\n\n';
-      
-      // Report progress
+      // Update progress - 50% of progress is for loading pages
       if (onProgress) {
-        onProgress((i / numPages) * 100);
+        onProgress((i / numPages) * 50);
+      }
+      
+      const page = await pdf.getPage(i);
+      
+      // Render page to canvas at higher resolution for better OCR
+      const canvas = await pdfPageToCanvas(page, 2);
+      
+      // Convert canvas to blob
+      const blob = await new Promise<Blob>((resolve) => {
+        canvas.toBlob((b) => resolve(b!), 'image/png');
+      });
+      
+      // Extract text from the rendered page image
+      const worker = await createWorker();
+      await worker.loadLanguage('eng');
+      await worker.initialize('eng');
+      
+      const { data } = await worker.recognize(blob);
+      await worker.terminate();
+      
+      // Add page text with proper formatting
+      combinedText += data.text + '\n\n';
+      
+      // Update progress - remaining 50% is for OCR
+      if (onProgress) {
+        onProgress(50 + (i / numPages) * 50);
       }
     }
     
     return {
-      text: extractedText.trim(),
+      text: combinedText.trim(),
       fileName: file.name
     };
   } catch (error) {
