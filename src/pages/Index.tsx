@@ -137,6 +137,9 @@ const Index = () => {
         <footer className="mt-12 text-center text-sm text-gray-500">
           <p className="mb-1">All processing happens locally in your browser. Your files never leave your device.</p>
           <p className="text-indigo-500 font-medium">Privacy and security guaranteed.</p>
+          <p className="mt-3 text-sm font-medium bg-clip-text text-transparent bg-gradient-to-r from-purple-600 via-pink-500 to-indigo-500">
+            Created with ❤ by Naseer
+          </p>
         </footer>
       </div>
     </div>
