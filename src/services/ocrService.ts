@@ -13,7 +13,7 @@ export interface ExtractionResult {
   fileName: string;
 }
 
-// Function to extract text from an image with enhanced math recognition
+// Function to extract text from an image
 export const extractTextFromImage = async (
   file: File | Blob, 
   onProgress?: (progress: number) => void
@@ -31,29 +31,20 @@ export const extractTextFromImage = async (
     await worker.loadLanguage('eng');
     await worker.initialize('eng');
     
-    // Configure better recognition settings for math formulas
+    // Configure better recognition settings
     await worker.setParameters({
       tessjs_create_hocr: '0',
       tessjs_create_tsv: '0',
       tessjs_create_box: '0',
       tessjs_create_unlv: '0',
       tessjs_create_osd: '0',
-      preserve_interword_spaces: '1',
-      tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,+-*/()[]{}=><^_√∫∑∏π∞±≤≥≠≈',
-      tessedit_pageseg_mode: '6', // Assume a single uniform block of text
-      textord_heavy_nr: '1', // Better handling of superscripts/subscripts
-      textord_tablefind_recognize_tables: '1', // Better for equation layouts
     });
     
-    // Process the image with higher DPI if it's smaller
     const { data } = await worker.recognize(file);
     await worker.terminate();
     
-    // Post-process recognized text to improve mathematical formula representation
-    const processedText = postProcessMathText(data.text);
-    
     return {
-      text: processedText,
+      text: data.text,
       fileName: file instanceof File ? file.name : 'extracted-image'
     };
   } catch (error) {
@@ -65,35 +56,8 @@ export const extractTextFromImage = async (
   }
 };
 
-// Helper function to post-process text and improve math formula representation
-const postProcessMathText = (text: string): string => {
-  // Fix common OCR errors in mathematical notation
-  return text
-    // Fix superscripts and subscripts
-    .replace(/([0-9])\s+([0-9])/g, '$1$2') // Remove spaces between adjacent numbers
-    .replace(/([a-zA-Z])\s+(\d)/g, '$1$2') // Fix variable + number spacing
-    .replace(/([a-zA-Z0-9])\s*\^\s*(\d)/g, '$1^$2') // Fix superscript notation
-    .replace(/([a-zA-Z0-9])\s*\_\s*(\d)/g, '$1_$2') // Fix subscript notation
-    // Fix common math symbols
-    .replace(/\|\-/g, '√') // Fix square root
-    .replace(/\-\-/g, '=') // Fix equals sign
-    .replace(/(\d+)\s*\/\s*(\d+)/g, '$1/$2') // Fix fractions
-    .replace(/([0-9a-zA-Z])\s*\*\s*([0-9a-zA-Z])/g, '$1*$2') // Fix multiplication
-    .replace(/\s*\+\s*/g, ' + ') // Format addition
-    .replace(/\s*\-\s*/g, ' - ') // Format subtraction
-    .replace(/\)\s*\(/g, ')(') // Fix parentheses spacing
-    .replace(/([a-zA-Z])\s+(\()/g, '$1$2') // Fix function notation
-    .replace(/(\))\s+([a-zA-Z])/g, '$1$2') // Fix parentheses + letter spacing
-    // Fix multi-character variables and equations
-    .replace(/d\s*y\s*\/\s*d\s*x/g, 'dy/dx') // Fix derivatives
-    .replace(/\\sum/g, '∑') // Fix summation
-    .replace(/\\int/g, '∫') // Fix integral
-    .replace(/\\infty/g, '∞') // Fix infinity
-    .replace(/\\pi/g, 'π'); // Fix pi
-};
-
-// Convert PDF page to image canvas with higher resolution for math content
-const pdfPageToCanvas = async (page: any, scale = 4): Promise<HTMLCanvasElement> => {
+// Convert PDF page to image canvas with better quality
+const pdfPageToCanvas = async (page: any, scale = 3): Promise<HTMLCanvasElement> => {
   const viewport = page.getViewport({ scale });
   const canvas = document.createElement('canvas');
   const context = canvas.getContext('2d');
@@ -139,7 +103,7 @@ export const extractTextFromPDF = async (
       const page = await pdf.getPage(i);
       
       // Render page to canvas at higher resolution for better OCR
-      const canvas = await pdfPageToCanvas(page, 4);
+      const canvas = await pdfPageToCanvas(page, 3);
       
       // Convert canvas to blob with higher quality
       const blob = await new Promise<Blob>((resolve, reject) => {
@@ -156,12 +120,12 @@ export const extractTextFromPDF = async (
         );
       });
       
-      // Extract text from the rendered page image with improved settings for math
+      // Extract text from the rendered page image with improved settings
       const worker = await createWorker();
       await worker.loadLanguage('eng');
       await worker.initialize('eng');
       
-      // Configure worker for better math recognition
+      // Configure worker for better text recognition
       await worker.setParameters({
         tessjs_create_hocr: '0',
         tessjs_create_tsv: '0',
@@ -169,19 +133,13 @@ export const extractTextFromPDF = async (
         tessjs_create_unlv: '0',
         tessjs_create_osd: '0',
         preserve_interword_spaces: '1',
-        tessedit_char_whitelist: 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789.,+-*/()[]{}=><^_√∫∑∏π∞±≤≥≠≈',
-        tessedit_pageseg_mode: '6', // Assume a single uniform block of text
-        textord_heavy_nr: '1', // Better handling of superscripts/subscripts
       });
       
       const { data } = await worker.recognize(blob);
       await worker.terminate();
       
-      // Apply post-processing for better math formula representation
-      const processedText = postProcessMathText(data.text);
-      
       // Add page text with proper formatting
-      combinedText += processedText + '\n\n';
+      combinedText += data.text + '\n\n';
       
       // Update progress - remaining 60% is for OCR
       if (onProgress) {

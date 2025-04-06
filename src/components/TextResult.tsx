@@ -45,18 +45,6 @@ const TextResult: React.FC<TextResultProps> = ({ extractedText, fileName }) => {
     toast.success('Text downloaded successfully!');
   };
   
-  // Function to highlight mathematical expressions in text
-  const formatMathText = (text: string) => {
-    if (!text) return null;
-    
-    // Split text by lines to preserve proper formatting
-    return text.split('\n').map((line, lineIndex) => (
-      <div key={lineIndex} className="whitespace-pre-wrap font-sans text-sm break-words">
-        {line}
-      </div>
-    ));
-  };
-  
   return (
     <Card className="w-full">
       <CardHeader>
@@ -65,9 +53,9 @@ const TextResult: React.FC<TextResultProps> = ({ extractedText, fileName }) => {
         </CardTitle>
       </CardHeader>
       <CardContent>
-        <div className="result-container bg-gray-50 p-4 rounded border max-h-96 overflow-y-auto font-mono">
+        <div className="result-container bg-gray-50 p-4 rounded border max-h-96 overflow-y-auto">
           {extractedText ? (
-            <div className="math-content">{formatMathText(extractedText)}</div>
+            <pre className="whitespace-pre-wrap font-sans text-sm break-words">{extractedText}</pre>
           ) : (
             <p className="text-gray-400 italic">No text was extracted.</p>
           )}
