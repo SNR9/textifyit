@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import FileUpload from '@/components/FileUpload';
 import TextResult from '@/components/TextResult';
 import ProcessingIndicator from '@/components/ProcessingIndicator';
+import ContactUs from '@/components/ContactUs';
+import Logo from '@/components/Logo';
 import { processFile, ExtractionResult } from '@/services/ocrService';
 import { toast } from 'sonner';
 
@@ -86,8 +88,9 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-gray-50 py-8">
       <div className="container px-4 mx-auto max-w-6xl">
-        <header className="mb-8 text-center">
-          <h1 className="text-3xl font-bold text-gray-900 mb-2">Image & PDF to Text Converter</h1>
+        <header className="mb-8 flex flex-col items-center">
+          <Logo />
+          <h1 className="text-3xl font-bold text-gray-900 mb-2 mt-2">Image & PDF to Text Converter</h1>
           <p className="text-gray-600">
             Extract text from images and PDF files quickly and securely
           </p>
@@ -124,6 +127,8 @@ const Index = () => {
             </div>
           </div>
         )}
+        
+        <ContactUs />
         
         <footer className="mt-8 text-center text-sm text-gray-500">
           <p>All processing happens locally in your browser. Your files never leave your device.</p>
