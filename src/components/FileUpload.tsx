@@ -1,6 +1,6 @@
 
 import React, { useCallback, useState } from 'react';
-import { FileImage, FileText, Upload } from 'lucide-react';
+import { FileImage, FileText, Upload, ImageIcon } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { toast } from 'sonner';
 import ImagePaste from './ImagePaste';
@@ -84,25 +84,25 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileSelect, onImagePaste, isP
               <span className="text-xs">PDF</span>
             </div>
           </div>
-          <label htmlFor="file-upload">
-            <input
-              id="file-upload"
-              type="file"
-              multiple
-              accept="image/*,.pdf"
-              className="hidden"
-              onChange={handleFileChange}
-              disabled={isProcessing}
-            />
-            <Button asChild variant="outline">
-              <span>Select Files</span>
-            </Button>
-          </label>
+          <div className="flex flex-col gap-3 items-center">
+            <label htmlFor="file-upload">
+              <input
+                id="file-upload"
+                type="file"
+                multiple
+                accept="image/*,.pdf"
+                className="hidden"
+                onChange={handleFileChange}
+                disabled={isProcessing}
+              />
+              <Button asChild variant="outline">
+                <span>Select Files</span>
+              </Button>
+            </label>
+            
+            <ImagePaste onImagePaste={onImagePaste} isProcessing={isProcessing} />
+          </div>
         </div>
-      </div>
-      
-      <div className="flex justify-center">
-        <ImagePaste onImagePaste={onImagePaste} isProcessing={isProcessing} />
       </div>
     </div>
   );
