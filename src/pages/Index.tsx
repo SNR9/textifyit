@@ -86,17 +86,19 @@ const Index = () => {
   };
   
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gradient-to-b from-indigo-50 via-white to-purple-50 py-12">
       <div className="container px-4 mx-auto max-w-6xl">
-        <header className="mb-8 flex flex-col items-center">
-          <Logo />
-          <h1 className="text-3xl font-bold text-gray-900 mb-2 mt-2">Image & PDF to Text Converter</h1>
-          <p className="text-gray-600">
-            Extract text from images and PDF files quickly and securely
+        <header className="mb-10 flex flex-col items-center">
+          <div className="mb-3 transform hover:scale-105 transition-transform duration-300">
+            <Logo />
+          </div>
+          <h1 className="text-4xl font-bold mb-3 bg-clip-text text-transparent bg-gradient-to-r from-indigo-700 via-purple-700 to-pink-600">Image & PDF to Text Converter</h1>
+          <p className="text-gray-600 max-w-2xl text-center">
+            Extract text from images and PDF files quickly and securely with our powerful conversion tool
           </p>
         </header>
         
-        <div className="mb-8">
+        <div className="mb-10 transform hover:shadow-lg transition-all duration-300">
           <FileUpload 
             onFileSelect={handleFileSelect} 
             onImagePaste={handleImagePaste}
@@ -105,7 +107,7 @@ const Index = () => {
         </div>
         
         {processing && (
-          <div className="mb-8">
+          <div className="mb-10">
             <ProcessingIndicator 
               fileName={currentFile} 
               progress={progress} 
@@ -114,9 +116,9 @@ const Index = () => {
         )}
         
         {results.length > 0 && (
-          <div className="mb-8">
-            <h2 className="text-xl font-semibold mb-4">Results</h2>
-            <div className="space-y-6">
+          <div className="mb-12">
+            <h2 className="text-2xl font-semibold mb-6 text-center text-indigo-800">Results</h2>
+            <div className="space-y-8">
               {results.map((result, index) => (
                 <TextResult 
                   key={index} 
@@ -128,11 +130,13 @@ const Index = () => {
           </div>
         )}
         
-        <ContactUs />
+        <div className="mb-10">
+          <ContactUs />
+        </div>
         
-        <footer className="mt-8 text-center text-sm text-gray-500">
-          <p>All processing happens locally in your browser. Your files never leave your device.</p>
-          <p className="mt-2">Privacy and security guaranteed.</p>
+        <footer className="mt-12 text-center text-sm text-gray-500">
+          <p className="mb-1">All processing happens locally in your browser. Your files never leave your device.</p>
+          <p className="text-indigo-500 font-medium">Privacy and security guaranteed.</p>
         </footer>
       </div>
     </div>
