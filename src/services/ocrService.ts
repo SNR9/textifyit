@@ -7,6 +7,15 @@ export interface ExtractionResult {
   fileName: string;
 }
 
+// Define PSM modes for Tesseract.js since it's not exported directly
+const PSM = {
+  SINGLE_BLOCK: '3',
+  SINGLE_LINE: '7',
+  SINGLE_WORD: '8',
+  SINGLE_CHAR: '10',
+  SPARSE_TEXT: '11'
+};
+
 const initializeWorker = async () => {
   const worker = await createWorker({
     logger: (m) => {
@@ -18,7 +27,7 @@ const initializeWorker = async () => {
     await worker.loadLanguage('eng');
     await worker.initialize('eng');
     await worker.setParameters({
-      tessedit_pageseg_mode: PSM.SINGLE_BLOCK, // Use enum value
+      tessedit_pageseg_mode: PSM.SINGLE_BLOCK, // Using our defined value
       preserve_interword_spaces: '1',
     });
     return worker;
