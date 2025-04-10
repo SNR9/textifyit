@@ -45,6 +45,11 @@ const TextResult: React.FC<TextResultProps> = ({ extractedText, fileName }) => {
     toast.success('Text downloaded successfully!');
   };
   
+  // Format the extracted text with proper line height for academic content
+  const formattedText = extractedText
+    ? extractedText
+    : 'No text was extracted.';
+  
   return (
     <Card className="w-full">
       <CardHeader>
@@ -55,7 +60,7 @@ const TextResult: React.FC<TextResultProps> = ({ extractedText, fileName }) => {
       <CardContent>
         <div className="result-container bg-gray-50 p-4 rounded border max-h-96 overflow-y-auto">
           {extractedText ? (
-            <pre className="whitespace-pre-wrap font-mono text-sm break-words">{extractedText}</pre>
+            <pre className="whitespace-pre-wrap font-mono text-sm break-words leading-relaxed tracking-wide">{formattedText}</pre>
           ) : (
             <p className="text-gray-400 italic">No text was extracted.</p>
           )}
