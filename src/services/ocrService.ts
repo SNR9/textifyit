@@ -18,10 +18,8 @@ const initializeWorker = async () => {
     await worker.loadLanguage('eng');
     await worker.initialize('eng');
     await worker.setParameters({
-      tessedit_pageseg_mode: 'AUTO',
+      tessedit_pageseg_mode: '3', // Use numeric value instead of enum
       preserve_interword_spaces: '1',
-      tessjs_create_hocr: '1',
-      tessjs_create_tsv: '1',
     });
     return worker;
   } catch (error) {
@@ -71,7 +69,12 @@ const postProcessText = (text: string): string => {
     
     // Fix common mathematical symbols
     .replace(/\^([a-zA-Z0-9]+)/g, '^$1') // Preserve superscripts
-    .replace(/_([a-zA-Z0-9]+)/g, '_$1'); // Preserve subscripts
+    .replace(/_([a-zA-Z0-9]+)/g, '_$1')  // Preserve subscripts
+    .replace(/(\d)\/(\d)/g, '$1÷$2')     // Improve division symbol recognition
+    .replace(/([a-zA-Z0-9])\^2/g, '$1²') // Convert ^2 to superscript
+    .replace(/([a-zA-Z0-9])\^3/g, '$1³') // Convert ^3 to superscript
+    .replace(/sqrt/g, '√')              // Improve square root symbol
+    .replace(/pi/g, 'π');              // Improve pi symbol
   
   return processed;
 };
@@ -84,12 +87,8 @@ const processFile = async (
   const worker = await getWorker();
   
   try {
-    // Use higher quality options for better recognition
-    const result = await worker.recognize(file, {
-      rotateAuto: true,
-      rotateAutoThreshold: 0.5,
-      deskew: true,
-    });
+    // Use safer recognition settings with no custom properties
+    const result = await worker.recognize(file);
     
     const originalText = result.data.text;
     const processedText = postProcessText(originalText);
