@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import FileUpload from '@/components/FileUpload';
 import TextResult from '@/components/TextResult';
@@ -16,7 +17,6 @@ const Index = () => {
   const handleFileSelect = async (files: File[]) => {
     if (files.length === 0) return;
     
-    console.log('File selection triggered with', files.length, 'files');
     setProcessing(true);
     setResults([]);
     const newResults: ExtractionResult[] = [];
@@ -27,24 +27,13 @@ const Index = () => {
         setCurrentFile(file.name);
         setProgress(0);
         
-        console.log(`Processing file ${i + 1}/${files.length}: ${file.name}`);
         toast.info(`Processing ${file.name}`, {
           description: 'Text extraction started.'
         });
         
-        const progressInterval = setInterval(() => {
-          setProgress(prev => {
-            const newProgress = prev + 5;
-            return newProgress > 90 ? 90 : newProgress;
-          });
-        }, 300);
-        
         const result = await processFile(file, (progressValue) => {
           setProgress(progressValue);
         });
-        
-        clearInterval(progressInterval);
-        setProgress(100);
         
         newResults.push(result);
         
@@ -57,7 +46,7 @@ const Index = () => {
     } catch (error) {
       console.error('Error processing files:', error);
       toast.error('Error processing files', {
-        description: 'There was an error extracting text. Please try again or use a different file.'
+        description: 'There was an error extracting text from one or more files.'
       });
     } finally {
       setProcessing(false);
@@ -66,7 +55,6 @@ const Index = () => {
   };
   
   const handleImagePaste = async (blob: Blob) => {
-    console.log('Image paste triggered');
     setProcessing(true);
     setResults([]);
     setCurrentFile('Pasted Image');
@@ -77,19 +65,9 @@ const Index = () => {
         description: 'Text extraction started.'
       });
       
-      const progressInterval = setInterval(() => {
-        setProgress(prev => {
-          const newProgress = prev + 5;
-          return newProgress > 90 ? 90 : newProgress;
-        });
-      }, 300);
-      
       const result = await processFile(blob, (progressValue) => {
         setProgress(progressValue);
       }, 'Pasted Image');
-      
-      clearInterval(progressInterval);
-      setProgress(100);
       
       setResults([result]);
       
@@ -99,7 +77,7 @@ const Index = () => {
     } catch (error) {
       console.error('Error processing pasted image:', error);
       toast.error('Error processing pasted image', {
-        description: 'There was an error extracting text. Please try again or use a different image.'
+        description: 'There was an error extracting text from the pasted image.'
       });
     } finally {
       setProcessing(false);
