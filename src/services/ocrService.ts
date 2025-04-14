@@ -41,8 +41,8 @@ const initializeWorker = async () => {
     await worker.loadLanguage('eng');
     await worker.initialize('eng');
     await worker.setParameters({
-      tessedit_pageseg_mode: PSM.AUTO as number,
-      tessedit_ocr_engine_mode: OEM.LSTM_ONLY as number,
+      tessedit_pageseg_mode: Number(PSM.AUTO),
+      tessedit_ocr_engine_mode: Number(OEM.LSTM_ONLY),
     });
     console.log('Tesseract worker initialized successfully');
     return worker;
