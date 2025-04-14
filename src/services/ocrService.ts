@@ -40,9 +40,10 @@ const initializeWorker = async () => {
   try {
     await worker.loadLanguage('eng');
     await worker.initialize('eng');
+    // Fix: Use type assertion to specify the exact type expected by Tesseract
     await worker.setParameters({
-      tessedit_pageseg_mode: Number(PSM.AUTO),
-      tessedit_ocr_engine_mode: Number(OEM.LSTM_ONLY),
+      tessedit_pageseg_mode: PSM.AUTO,
+      tessedit_ocr_engine_mode: OEM.LSTM_ONLY,
     });
     console.log('Tesseract worker initialized successfully');
     return worker;
