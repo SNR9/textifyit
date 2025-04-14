@@ -1,3 +1,4 @@
+
 import { createWorker } from 'tesseract.js';
 import { toast } from 'sonner';
 
@@ -40,8 +41,8 @@ const initializeWorker = async () => {
     await worker.loadLanguage('eng');
     await worker.initialize('eng');
     await worker.setParameters({
-      tessedit_pageseg_mode: PSM.AUTO,
-      tessedit_ocr_engine_mode: OEM.LSTM_ONLY,
+      tessedit_pageseg_mode: 3, // Using the raw number value for PSM.AUTO (3)
+      tessedit_ocr_engine_mode: 1, // Using the raw number value for OEM.LSTM_ONLY (1)
     });
     console.log('Tesseract worker initialized successfully');
     return worker;
