@@ -1,8 +1,7 @@
-
 import { createWorker } from 'tesseract.js';
 import { toast } from 'sonner';
 
-// Define the PSM constants since we're getting a type error
+// Define the PSM constants properly as numbers
 export enum PSM {
   OSD_ONLY = 0,
   AUTO_OSD = 1,
@@ -41,8 +40,8 @@ const initializeWorker = async () => {
     await worker.loadLanguage('eng');
     await worker.initialize('eng');
     await worker.setParameters({
-      tessedit_pageseg_mode: PSM.AUTO as number,
-      tessedit_ocr_engine_mode: OEM.LSTM_ONLY as number,
+      tessedit_pageseg_mode: PSM.AUTO,
+      tessedit_ocr_engine_mode: OEM.LSTM_ONLY,
     });
     console.log('Tesseract worker initialized successfully');
     return worker;
