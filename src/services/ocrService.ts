@@ -1,3 +1,4 @@
+
 import { createWorker, PSM, OEM } from 'tesseract.js';
 import { toast } from 'sonner';
 
@@ -16,9 +17,10 @@ const initializeWorker = async () => {
   try {
     await worker.loadLanguage('eng');
     await worker.initialize('eng');
+    // Use the correct parameter setting format according to Tesseract.js v4
     await worker.setParameters({
-      tessedit_pageseg_mode: PSM.AUTO,
-      tessedit_ocr_engine_mode: OEM.LSTM_ONLY,
+      tesseract_pageseg_mode: PSM.AUTO,
+      tesseract_ocr_engine_mode: OEM.LSTM_ONLY,
     });
     return worker;
   } catch (error) {
