@@ -32,13 +32,18 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileSelect, onImagePaste, isP
   }, [onFileSelect]);
   
   const handleFileChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
+    console.log('File input change detected');
     if (e.target.files && e.target.files.length > 0) {
       const files = Array.from(e.target.files);
+      console.log('Files selected:', files.map(f => f.name));
       validateAndProcessFiles(files);
+    } else {
+      console.log('No files were selected');
     }
   }, [onFileSelect]);
   
-  const validateAndProcessFiles = (files: File[]) => {
+  const validateAndProcessFiles = useCallback((files: File[]) => {
+    console.log('Validating files:', files.length);
     const validFiles = files.filter(file => {
       const isValidType = 
         file.type.startsWith('image/') || 
@@ -48,20 +53,25 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileSelect, onImagePaste, isP
         toast.error(`Unsupported file type: ${file.name}`, {
           description: "Only images and PDFs are supported."
         });
+        console.log('Invalid file type:', file.type, file.name);
       }
       
       return isValidType;
     });
     
     if (validFiles.length > 0) {
+      console.log('Processing valid files:', validFiles.length);
+      toast.info(`Processing ${validFiles.length} file(s)`, {
+        description: "Starting file processing..."
+      });
       onFileSelect(validFiles);
     }
-  };
+  }, [onFileSelect]);
   
   return (
     <div className="space-y-4">
       <div
-        className={`dropzone ${isDragging ? 'dropzone-active' : 'border-gray-300'} ${isProcessing ? 'opacity-50 pointer-events-none' : ''}`}
+        className={`dropzone border-2 border-dashed rounded-lg p-4 ${isDragging ? 'border-primary bg-primary/10' : 'border-gray-300'} ${isProcessing ? 'opacity-50 pointer-events-none' : ''}`}
         onDragOver={handleDragOver}
         onDragLeave={handleDragLeave}
         onDrop={handleDrop}
@@ -85,18 +95,24 @@ const FileUpload: React.FC<FileUploadProps> = ({ onFileSelect, onImagePaste, isP
             </div>
           </div>
           <div className="flex flex-col gap-3 items-center">
+            <input
+              id="file-upload"
+              type="file"
+              multiple
+              accept="image/*,.pdf"
+              className="hidden"
+              onChange={handleFileChange}
+              disabled={isProcessing}
+            />
             <label htmlFor="file-upload">
-              <input
-                id="file-upload"
-                type="file"
-                multiple
-                accept="image/*,.pdf"
-                className="hidden"
-                onChange={handleFileChange}
+              <Button 
+                variant="outline" 
+                className="w-full" 
+                type="button" 
                 disabled={isProcessing}
-              />
-              <Button asChild variant="outline">
-                <span>Select Files</span>
+                onClick={() => document.getElementById('file-upload')?.click()}
+              >
+                Select Files
               </Button>
             </label>
             
