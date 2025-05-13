@@ -1,5 +1,4 @@
-
-import { createWorker } from 'tesseract.js';
+import { createWorker, PSM } from 'tesseract.js';
 import * as PDFJS from 'pdfjs-dist';
 import { GlobalWorkerOptions } from 'pdfjs-dist';
 import { toast } from 'sonner';
@@ -33,7 +32,7 @@ export const extractTextFromImage = async (
     
     // Configure better recognition settings for handwritten text
     await worker.setParameters({
-      tessedit_pageseg_mode: '6', // Assume a single uniform block of text
+      tessedit_pageseg_mode: PSM.SINGLE_BLOCK, // Use enum instead of string '6'
       tessedit_ocr_engine_mode: '2', // Use LSTM neural network only
       preserve_interword_spaces: '1',
       tessjs_create_hocr: '0',
@@ -130,7 +129,7 @@ export const extractTextFromPDF = async (
       
       // Configure worker for better handwritten text recognition
       await worker.setParameters({
-        tessedit_pageseg_mode: '6', // Assume a single uniform block of text
+        tessedit_pageseg_mode: PSM.SINGLE_BLOCK, // Use enum instead of string '6'
         tessedit_ocr_engine_mode: '2', // Use LSTM neural network only
         preserve_interword_spaces: '1',
         tessjs_create_hocr: '0',
@@ -188,4 +187,3 @@ export const processFile = async (
     throw error;
   }
 };
-
