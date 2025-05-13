@@ -1,4 +1,5 @@
-import { createWorker, PSM } from 'tesseract.js';
+
+import { createWorker } from 'tesseract.js';
 import * as PDFJS from 'pdfjs-dist';
 import { GlobalWorkerOptions } from 'pdfjs-dist';
 import { toast } from 'sonner';
@@ -30,11 +31,8 @@ export const extractTextFromImage = async (
     await worker.loadLanguage('eng');
     await worker.initialize('eng');
     
-    // Configure better recognition settings for handwritten text
+    // Configure better recognition settings
     await worker.setParameters({
-      tessedit_pageseg_mode: PSM.SINGLE_BLOCK, // Use enum instead of string '6'
-      tessedit_ocr_engine_mode: '2', // Use LSTM neural network only
-      preserve_interword_spaces: '1',
       tessjs_create_hocr: '0',
       tessjs_create_tsv: '0',
       tessjs_create_box: '0',
@@ -59,7 +57,7 @@ export const extractTextFromImage = async (
 };
 
 // Convert PDF page to image canvas with better quality
-const pdfPageToCanvas = async (page: any, scale = 4): Promise<HTMLCanvasElement> => {
+const pdfPageToCanvas = async (page: any, scale = 3): Promise<HTMLCanvasElement> => {
   const viewport = page.getViewport({ scale });
   const canvas = document.createElement('canvas');
   const context = canvas.getContext('2d');
@@ -105,7 +103,7 @@ export const extractTextFromPDF = async (
       const page = await pdf.getPage(i);
       
       // Render page to canvas at higher resolution for better OCR
-      const canvas = await pdfPageToCanvas(page, 4);
+      const canvas = await pdfPageToCanvas(page, 3);
       
       // Convert canvas to blob with higher quality
       const blob = await new Promise<Blob>((resolve, reject) => {
@@ -122,21 +120,19 @@ export const extractTextFromPDF = async (
         );
       });
       
-      // Extract text from the rendered page image with improved settings for handwritten text
+      // Extract text from the rendered page image with improved settings
       const worker = await createWorker();
       await worker.loadLanguage('eng');
       await worker.initialize('eng');
       
-      // Configure worker for better handwritten text recognition
+      // Configure worker for better text recognition
       await worker.setParameters({
-        tessedit_pageseg_mode: PSM.SINGLE_BLOCK, // Use enum instead of string '6'
-        tessedit_ocr_engine_mode: '2', // Use LSTM neural network only
-        preserve_interword_spaces: '1',
         tessjs_create_hocr: '0',
         tessjs_create_tsv: '0',
         tessjs_create_box: '0',
         tessjs_create_unlv: '0',
         tessjs_create_osd: '0',
+        preserve_interword_spaces: '1',
       });
       
       const { data } = await worker.recognize(blob);
