@@ -31,8 +31,11 @@ export const extractTextFromImage = async (
     await worker.loadLanguage('eng');
     await worker.initialize('eng');
     
-    // Configure better recognition settings
+    // Configure better recognition settings for handwritten text
     await worker.setParameters({
+      tessedit_pageseg_mode: '6', // Assume a single uniform block of text
+      tessedit_ocr_engine_mode: '2', // Use LSTM neural network only
+      preserve_interword_spaces: '1',
       tessjs_create_hocr: '0',
       tessjs_create_tsv: '0',
       tessjs_create_box: '0',
@@ -57,7 +60,7 @@ export const extractTextFromImage = async (
 };
 
 // Convert PDF page to image canvas with better quality
-const pdfPageToCanvas = async (page: any, scale = 3): Promise<HTMLCanvasElement> => {
+const pdfPageToCanvas = async (page: any, scale = 4): Promise<HTMLCanvasElement> => {
   const viewport = page.getViewport({ scale });
   const canvas = document.createElement('canvas');
   const context = canvas.getContext('2d');
@@ -103,7 +106,7 @@ export const extractTextFromPDF = async (
       const page = await pdf.getPage(i);
       
       // Render page to canvas at higher resolution for better OCR
-      const canvas = await pdfPageToCanvas(page, 3);
+      const canvas = await pdfPageToCanvas(page, 4);
       
       // Convert canvas to blob with higher quality
       const blob = await new Promise<Blob>((resolve, reject) => {
@@ -120,19 +123,21 @@ export const extractTextFromPDF = async (
         );
       });
       
-      // Extract text from the rendered page image with improved settings
+      // Extract text from the rendered page image with improved settings for handwritten text
       const worker = await createWorker();
       await worker.loadLanguage('eng');
       await worker.initialize('eng');
       
-      // Configure worker for better text recognition
+      // Configure worker for better handwritten text recognition
       await worker.setParameters({
+        tessedit_pageseg_mode: '6', // Assume a single uniform block of text
+        tessedit_ocr_engine_mode: '2', // Use LSTM neural network only
+        preserve_interword_spaces: '1',
         tessjs_create_hocr: '0',
         tessjs_create_tsv: '0',
         tessjs_create_box: '0',
         tessjs_create_unlv: '0',
         tessjs_create_osd: '0',
-        preserve_interword_spaces: '1',
       });
       
       const { data } = await worker.recognize(blob);
@@ -183,3 +188,4 @@ export const processFile = async (
     throw error;
   }
 };
+
